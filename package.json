@@ -1,0 +1,36 @@
+{
+    "name": "user-tester",
+    "version": "0.0.1",
+    "private": false,
+    "license": "MIT",
+    "contributors": [
+        "Nathalie Kroeker <nathaliekroeker@gmail.com>"
+    ],
+    "scripts": {
+        "start": "react-scripts-ts start",
+        "build": "react-scripts-ts build",
+        "test": "react-scripts-ts test --env=jsdom",
+        "eject": "react-scripts-ts eject"
+    },
+    "dependencies": {
+        "@material-ui/core": "^1.2.0",
+        "@material-ui/icons": "^1.1.0",
+        "firebase": "^5.3.0",
+        "lodash": "^4.17.10",
+        "react": "^16.3.2",
+        "react-dom": "^16.3.2",
+        "react-router-dom": "^4.2.2",
+        "react-scripts-ts": "2.16.0",
+        "typeface-nunito": "0.0.54"
+    },
+    "devDependencies": {
+        "@types/lodash": "^4.14.109",
+        "@types/node": "^10.0.9",
+        "@types/react": "^16.3.14",
+        "@types/react-dom": "^16.0.5",
+        "@types/react-router-dom": "^4.2.6",
+        "request": "^2.87.0",
+        "request-promise": "^4.2.2",
+        "typescript": "^2.9.1"
+    }
+}
