@@ -15,12 +15,12 @@ const styles = {
     }
 };
 
-interface CardItemProps extends StyleComponentProps {
+interface CardItemProps {
     card: Card;
 }
 
-@withStyles(styles)
-class CardItem extends React.Component<CardItemProps> {
+type Props = CardItemProps & { classes: any }
+class CardItem extends React.Component<Props> {
     render() {
         console.log(this.props.card);
         const { classes } = this.props;
@@ -32,4 +32,4 @@ class CardItem extends React.Component<CardItemProps> {
     }
 }
 
-export default CardItem;
+export default withStyles(styles)(CardItem);

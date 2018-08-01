@@ -8,6 +8,7 @@ import HTML5Backend from "react-dnd-html5-backend";
 import { Card, CardSortTest } from "models";
 import { RouteComponentProps } from "react-router";
 import { CardItem } from "components/CardSort";
+import * as data from "data/cardSort";
 
 const styles = (theme: Theme): StyleRules => ({
     page: {
@@ -44,12 +45,10 @@ class CardSort extends React.Component<Props, CardSortState> {
     async componentDidMount() {
         // set this to secret code for test which creator can set or copy
         const testId = this.props.location.pathname.split("/").reverse()[0];
-        const cards: Card[] = [];
-        this.setState({ cards });
+        this.setState({ cards: data.cards });
     }
 
     render() {
-        console.log(this.state.cards);
         const { classes } = this.props;
         const { cards } = this.state;
         return (
@@ -58,10 +57,7 @@ class CardSort extends React.Component<Props, CardSortState> {
                     <Grid container spacing={16} className={classes.full}>
                         <Grid item className={classNames(classes.full, classes.bin)}>
                             <Paper className={classes.container}>
-                                {cards && Object.keys(cards).map(index => {
-                                    console.log(index);
-                                    return <CardItem key={cards[index]} card={cards[index]} />;
-                                })}
+                                {cards && cards.map((card, index) => <CardItem key={"card" + index} card={card} />)}
                             </Paper>
                         </Grid>
                         <Grid item xs className={classes.full}>
