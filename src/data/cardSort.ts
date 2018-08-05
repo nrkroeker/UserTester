@@ -1,4 +1,4 @@
-import * as Models from "Models";
+import * as Models from "models";
 
 export const cards: Models.Card[] = [
     { id: 1, label: "Hire new employee", initialOrder: 1 },
@@ -22,6 +22,7 @@ export const cardSortTest: Models.CardSortTest = {
     description: "Various tasks required to manage employees",
     type: Models.TestType.CardSort,
     status: Models.TestStatus.Draft,
+    groups: ["Scheduling", "Hiring"],
     cards,
     messages,
     questions

@@ -60,7 +60,7 @@ export class CardSortTest extends Test {
 
 export class CardGroup {
     public title: string;
-    public cards: Card[];
+    public cards?: Card[];
 }
 
 export class SurveyAnswer {
