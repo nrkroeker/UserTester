@@ -1,7 +1,9 @@
-export { default as Card } from "./Card";
+export { default as Card, CardLocation } from "./Card";
 
-export { default as CardContainer } from "./CardContainer";
+export { default as GroupContainer } from "./GroupContainer";
+
+export { default as CardGroup } from "./CardGroup";
 
 export { default as CardList } from "./CardList";
 
-export { default as DragLayer } from "./DragLayer";
+export { default as CustomDragLayer } from "./CustomDragLayer";

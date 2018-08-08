@@ -28,7 +28,7 @@ const styles = {
     },
     cardBox: {
         width: "266px",
-        margin: "8px",
+        marginBottom: "8px",
         height: "32px",
         borderRadius: 4
     },
@@ -37,18 +37,24 @@ const styles = {
         height: 0
     },
     dragSpace: {
-        backgroundColor: "lightgray",
+        backgroundColor: "#bdbdbd",
     }
 };
 
+export interface CardLocation {
+    position: "list" | "groups";
+    cardIndex?: number;
+    groupIndex?: number;
+}
+
 export interface CardProps {
     card: models.Card;
-    index?: number;
+    location?: CardLocation;
     isDragging?: boolean;
     connectDragPreview?: ConnectDragPreview;
     connectDragSource?: ConnectDragSource;
     connectDropTarget?: ConnectDropTarget;
-    moveCard?(originalIndex: number, atIndex: number): void;
+    moveCard?(from: CardLocation, to: CardLocation): void;
 }
 type Props = CardProps & { classes: any };
 
@@ -56,7 +62,7 @@ const cardSource = {
     beginDrag(props: CardProps) {
         return {
             card: props.card,
-            index: props.index
+            location: props.location
         };
     },
 };
@@ -66,24 +72,24 @@ const cardTarget = {
         return false;
     },
     hover(props: CardProps, monitor: DropTargetMonitor, component: Card | null): any {
-        const dragIndex = monitor.getItem().index;
-        const { index: overIndex } = props;
+        const from = monitor.getItem().location;
+        const to = props.location;
 
-        if (dragIndex !== overIndex) {
+        if (from.cardIndex !== to.cardIndex || from.groupIndex !== to.groupIndex) {
             const hoverBoundingRect = (findDOMNode(
                 component,
             ) as Element).getBoundingClientRect();
             const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
             const clientOffset = monitor.getClientOffset();
             const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-            if (dragIndex < overIndex && hoverClientY < hoverMiddleY) {
+            if (from.cardIndex < to.cardIndex && hoverClientY < hoverMiddleY) {
                 return undefined;
             }
-            if (dragIndex > overIndex && hoverClientY > hoverMiddleY) {
+            if (from.cardIndex > to.cardIndex && hoverClientY > hoverMiddleY) {
                 return undefined;
             }
-            props.moveCard(dragIndex, overIndex);
-            monitor.getItem().index = overIndex;
+            props.moveCard(from, to);
+            monitor.getItem().location = {...to};
         }
     }
 };

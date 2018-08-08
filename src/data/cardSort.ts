@@ -22,7 +22,7 @@ export const cardSortTest: Models.CardSortTest = {
     description: "Various tasks required to manage employees",
     type: Models.TestType.CardSort,
     status: Models.TestStatus.Draft,
-    groups: ["Scheduling", "Hiring"],
+    groups: ["Scheduling", "Hiring", "Communication", "Payroll"],
     cards,
     messages,
     questions

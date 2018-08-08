@@ -3,47 +3,66 @@ import { StyleRules, Theme, withStyles } from "@material-ui/core/styles";
 import Types from "./DndTypes";
 import {
     DropTarget,
+    DropTargetMonitor,
     ConnectDropTarget,
 } from "react-dnd";
 import * as models from "models";
-import Card from "./Card";
+import Card, { CardLocation } from "./Card";
 
 const styles = (theme: Theme): StyleRules => ({
     container: {
-        height: "100%"
+        minHeight: "40px",
+        width: "300px",
+        padding: "8px"
+    },
+    placeholder: {
+        backgroundColor: "#bdbdbd",
+        width: "282px",
+        height: "32px",
+        borderRadius: 4
     }
 });
 
 interface CardListProps {
+    isOver?: boolean;
+    canDrop?: boolean;
     connectDropTarget?: ConnectDropTarget;
-    cards: models.Card[];
-    moveCard(originalIndex: number, atIndex: number): void;
+    cards?: models.Card[];
+    location: CardLocation;
+    moveCard(from: CardLocation, to: CardLocation): void;
 }
 
 const cardTarget = {
-    drop() {
-        return { name: "Card List" };
-    },
+    drop(props: CardListProps, monitor: DropTargetMonitor) {
+        const from = monitor.getItem().location;
+        const to = { ...props.location, cardIndex: 0 };
+        props.moveCard(from, to);
+    }
 };
 
 type Props = { classes: any } & CardListProps;
-@DropTarget(Types.CARD, cardTarget, connect => ({
+@DropTarget(Types.CARD, cardTarget, (connect, monitor) => ({
         connectDropTarget: connect.dropTarget(),
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop()
 }))
 class CardList extends React.Component<Props> {
     render() {
-        const { cards, classes, connectDropTarget } = this.props;
+        const { canDrop, cards, classes, connectDropTarget, isOver } = this.props;
         return connectDropTarget &&
             connectDropTarget(
-                <div style={{ height: "100%", width: "100%"}}>
-                    {cards && cards.map((card, index) => (
+                <div className={classes.container}>
+                    {cards.length > 0 ? cards.map((card, index) => (
                         <Card
                             key={card.id}
-                            index={index}
                             card={card}
+                            location={{...this.props.location, cardIndex: index }}
                             moveCard={this.props.moveCard}
                         />
-                    ))}
+                    ))
+                    : isOver && canDrop &&
+                    <div className={classes.placeholder} />
+                    }
                 </div>
             );
     }
