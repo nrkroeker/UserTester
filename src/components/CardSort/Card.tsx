@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as _ from "lodash";
 import { findDOMNode } from "react-dom";
 import * as classNames from "classnames";
 import { Paper, Typography } from "@material-ui/core";
@@ -20,24 +21,20 @@ import * as models from "models";
 
 const styles = {
     card: {
-        width: "266px",
-        cursor: "move"
+        width: "284px",
+        cursor: "move",
+        marginBottom: "8px",
     },
     label: {
         padding: "8px",
     },
     cardBox: {
-        width: "266px",
-        marginBottom: "8px",
-        height: "32px",
-        borderRadius: 4
     },
     draggingCard: {
-        opacity: 0,
-        height: 0
-    },
-    dragSpace: {
-        backgroundColor: "#bdbdbd",
+        display: "none",
+        // opacity: 0,
+        // height: 0,
+        marginBottom: 0
     }
 };
 
@@ -51,51 +48,61 @@ export interface CardProps {
     card: models.Card;
     location?: CardLocation;
     isDragging?: boolean;
+    isOver?: boolean;
     connectDragPreview?: ConnectDragPreview;
     connectDragSource?: ConnectDragSource;
     connectDropTarget?: ConnectDropTarget;
-    moveCard?(from: CardLocation, to: CardLocation): void;
+    placeholder?: { location: CardLocation, height: number };
+    setPlaceholder?(placeholder: { location: CardLocation, height: number }): void;
 }
 type Props = CardProps & { classes: any };
 
 const cardSource = {
-    beginDrag(props: CardProps) {
+    beginDrag(props: CardProps, monitor: DragSourceMonitor, component: Card | null) {
+        const height = (findDOMNode(component) as Element).getBoundingClientRect().height;
         return {
             card: props.card,
-            location: props.location
+            location: props.location,
+            height
         };
     },
-};
-
-const cardTarget = {
-    canDrop() {
-        return false;
-    },
-    hover(props: CardProps, monitor: DropTargetMonitor, component: Card | null): any {
-        const from = monitor.getItem().location;
-        const to = props.location;
-
-        if (from.cardIndex !== to.cardIndex || from.groupIndex !== to.groupIndex) {
-            const hoverBoundingRect = (findDOMNode(
-                component,
-            ) as Element).getBoundingClientRect();
-            const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-            const clientOffset = monitor.getClientOffset();
-            const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
-            if (from.cardIndex < to.cardIndex && hoverClientY < hoverMiddleY) {
-                return undefined;
-            }
-            if (from.cardIndex > to.cardIndex && hoverClientY > hoverMiddleY) {
-                return undefined;
-            }
-            props.moveCard(from, to);
-            monitor.getItem().location = {...to};
-        }
+    isDragging(props: CardProps, monitor: DragSourceMonitor) {
+        return props.card.id === monitor.getItem().card.id;
     }
 };
 
-@DropTarget(Types.CARD, cardTarget, connect => ({
-    connectDropTarget: connect.dropTarget()
+const cardTarget = {
+    hover(props: CardProps, monitor: DropTargetMonitor, component: Card | null): any {
+        if (!component) return null;
+        const item = { ...monitor.getItem() };
+        const hover = { ...props.location };
+        if (_.isEqual(hover, props.placeholder)) return undefined;
+        const hoverBoundingRect = (findDOMNode(
+            component,
+        ) as Element).getBoundingClientRect();
+        const placeholder = {
+            location: hover,
+            height: item.height
+        };
+        const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+        const clientOffset = monitor.getClientOffset();
+        const hoverClientY = (clientOffset as XYCoord).y - hoverBoundingRect.top;
+        if (hoverClientY <= hoverMiddleY) {
+            props.setPlaceholder(placeholder);
+        }
+        if (hoverClientY > hoverMiddleY) {
+            placeholder.location.cardIndex += 1;
+            props.setPlaceholder(placeholder);
+        }
+    },
+    // drop(props: CardProps, monitor: DropTargetMonitor, component: Card | null): any {
+
+    // }
+};
+
+@DropTarget(Types.CARD, cardTarget, (connect, monitor) => ({
+    connectDropTarget: connect.dropTarget(),
+    isOver: monitor.isOver()
 }))
 @DragSource(
     Types.CARD,
@@ -111,18 +118,18 @@ class Card extends React.Component<Props> {
         const { connectDragPreview } = this.props;
         if (connectDragPreview) {
             connectDragPreview(getEmptyImage(), {
-                captureDraggingState: true,
+                captureDraggingState: false,
             });
         }
     }
 
     render() {
-        const { isDragging, classes, connectDragSource, connectDropTarget } = this.props;
+        const { isDragging, classes, connectDragSource, connectDropTarget, isOver } = this.props;
         return connectDragSource && connectDropTarget &&
             connectDragSource(
                 connectDropTarget(
-                    <div className={classNames(classes.cardBox, { [classes.dragSpace]: isDragging })}>
-                        <Paper className={classNames(classes.card, { [classes.draggingCard]: isDragging})}>
+                    <div className={classNames(classes.cardBox, { [classes.dragSpace]: isDragging && isOver })}>
+                        <Paper className={classNames(classes.card, { [classes.draggingCard]: isDragging })}>
                             <Typography className={classes.label} variant="body1">{this.props.card.label}</Typography>
                         </Paper>
                     </div>

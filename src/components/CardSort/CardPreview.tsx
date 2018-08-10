@@ -1,12 +1,21 @@
 import * as React from "react";
 import Card, { CardProps } from "./Card";
-import { withStyles } from "@material-ui/core/styles";
+import { Paper, Typography } from "@material-ui/core";
+import { StyleRules, withStyles } from "@material-ui/core/styles";
 
-const styles = {
+const styles: StyleRules = {
     preview: {
         display: "inline-block",
         transform: "rotate(3deg)",
-        WebkitTransform: "rotate(3deg)"
+        WebkitTransform: "rotate(3deg)",
+        pointerEvents: "none"
+    },
+    card: {
+        width: "284px",
+        cursor: "move"
+    },
+    label: {
+        padding: "8px"
     }
 };
 type Props = CardProps & { classes: any };
@@ -15,7 +24,9 @@ class CardPreview extends React.PureComponent<Props> {
         const { classes } = this.props;
         return (
             <div className={classes.preview}>
-                <Card card={this.props.card} />
+                <Paper className={classes.card}>
+                    <Typography className={classes.label} variant="body1">{this.props.card.label}</Typography>
+                </Paper>
             </div>
         );
     }

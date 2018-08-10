@@ -2,7 +2,7 @@ import * as Models from "models";
 
 export const cards: Models.Card[] = [
     { id: 1, label: "Hire new employee", initialOrder: 1 },
-    { id: 2, label: "Create schedule", initialOrder: 3 },
+    { id: 2, label: "View employee availability marked as available, unavailable, or tentative and be able to edit it and then save the changes or cancel", initialOrder: 3 },
     { id: 3, label: "View timesheet", description: "Only managers view full timesheet", initialOrder: 2 }
 ];
 

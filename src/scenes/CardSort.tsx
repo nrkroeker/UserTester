@@ -15,18 +15,21 @@ const styles = (theme: Theme): StyleRules => ({
         margin: "24px",
         height: "calc(100% - " + theme.spacing.unit * 14 + "px)"
     },
-    container: {
+    full: {
+        height: "100%"
+    },
+    list: {
+        width: "300px",
+        height: "100%",
+        padding: 0,
+        overflowY: "auto",
+        backgroundColor: theme.palette.background.default
+    },
+    groups: {
         height: "100%",
         overflow: "hidden",
         clear: "both",
         backgroundColor: theme.palette.background.default
-    },
-    full: {
-        height: "100%"
-    },
-    bin: {
-        width: "300px",
-        overflow: "auto"
     }
 });
 
@@ -34,6 +37,10 @@ interface CardSortState {
     cards: {
         list: models.Card[];
         groups: models.CardGroup[]
+    };
+    placeholder?: {
+        location: CardLocation,
+        height: number
     };
 }
 
@@ -62,10 +69,14 @@ class CardSort extends React.Component<Props, CardSortState> {
         const card = from.position === "list" ? _.pullAt(cards[from.position], from.cardIndex)[0] : _.pullAt(cards[from.position][from.groupIndex].cards, from.cardIndex)[0];
         if (to.position === "list") {
             cards[to.position].splice(to.cardIndex, 0, card);
-        } else {
+        } else if (to.position === "groups") {
             cards[to.position][to.groupIndex].cards.splice(to.cardIndex, 0, card);
         }
-        this.setState({ cards });
+        this.setState({ cards, placeholder: undefined });
+    }
+
+    private setPlaceholder = (placeholder: { location: CardLocation, height: number }) => {
+        this.setState({ placeholder: { ...placeholder } });
     }
 
     render() {
@@ -75,18 +86,25 @@ class CardSort extends React.Component<Props, CardSortState> {
             <div className={classes.page}>
                 <CustomDragLayer />
                 <Grid container spacing={16} className={classes.full}>
-                    <Grid item className={classNames(classes.full, classes.bin)}>
-                        <Paper component={"div"} className={classes.container}>
+                    <Grid item className={classes.full}>
+                        <Paper className={classes.list}>
                             <CardList
                                 cards={cards.list}
                                 location={{ position: "list" }}
                                 moveCard={this.moveCard}
+                                placeholder={this.state.placeholder}
+                                setPlaceholder={this.setPlaceholder}
                             />
                         </Paper>
                     </Grid>
                     <Grid item xs className={classes.full}>
-                        <Paper component={"div"} className={classes.container}>
-                            <GroupContainer groups={cards.groups} moveCard={this.moveCard} />
+                        <Paper className={classes.groups}>
+                            <GroupContainer
+                                groups={cards.groups}
+                                moveCard={this.moveCard}
+                                placeholder={this.state.placeholder}
+                                setPlaceholder={this.setPlaceholder}
+                            />
                         </Paper>
                     </Grid>
                 </Grid>

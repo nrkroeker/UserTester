@@ -21,6 +21,11 @@ const styles = (theme: Theme): StyleRules => ({
 interface GroupContainerProps {
     groups?: models.CardGroup[];
     moveCard(from: CardLocation, to: CardLocation): void;
+    placeholder?: {
+        location: CardLocation,
+        height: number
+    };
+    setPlaceholder(placeholder: { location: CardLocation, height: number }): void;
 }
 type Props = { classes: any } & GroupContainerProps;
 
@@ -37,6 +42,8 @@ class GroupContainer extends React.Component<Props> {
                             title={group.title}
                             cards={group.cards}
                             moveCard={this.props.moveCard}
+                            placeholder={this.props.placeholder}
+                            setPlaceholder={this.props.setPlaceholder}
                         />
                     </Grid>
                 ))}

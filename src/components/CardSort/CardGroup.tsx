@@ -22,6 +22,11 @@ export interface CardGroupProps {
     title?: string;
     cards?: models.Card[];
     moveCard(from: CardLocation, to: CardLocation): void;
+    placeholder?: {
+        location: CardLocation,
+        height: number
+    };
+    setPlaceholder(placeholder: { location: CardLocation, height: number }): void;
 }
 type Props = CardGroupProps & { classes: any };
 
@@ -37,6 +42,8 @@ class CardGroup extends React.Component<Props> {
                             cards={this.props.cards}
                             location={{ position: "groups", groupIndex: this.props.index}}
                             moveCard={this.props.moveCard}
+                            placeholder={this.props.placeholder}
+                            setPlaceholder={this.props.setPlaceholder}
                         />
                     </div>
                 </Paper>
